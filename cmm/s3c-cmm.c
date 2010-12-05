@@ -25,6 +25,7 @@
 #include <linux/errno.h>
 #include <linux/fs.h>
 #include <linux/kernel.h>
+#include <linux/pci.h>
 #include <linux/major.h>
 #include <linux/slab.h>
 #include <linux/poll.h>
@@ -269,7 +270,7 @@ static int s3c_cmm_ioctl(struct inode *inode, struct file *file, unsigned
 
 			start = node->v_addr;
 			end = start + codec_cache_flush_arg.size;
-			dmac_clean_range(start, end);
+			dmac_unmap_area(start, end,PCI_DMA_BIDIRECTIONAL);
 			outer_clean_range(__pa(start), __pa(end));
 
 			break;
@@ -344,7 +345,7 @@ static int s3c_cmm_ioctl(struct inode *inode, struct file *file, unsigned
 
 			start = node->v_addr;
 			end = start + codec_cache_flush_arg.size;
-			dmac_clean_range(start, end);
+			dmac_unmap_area(start, end,PCI_DMA_BIDIRECTIONAL);
 
 			break;
 
@@ -367,7 +368,7 @@ static int s3c_cmm_ioctl(struct inode *inode, struct file *file, unsigned
 
 			start = node->v_addr;
 			end = start + codec_cache_flush_arg.size;
-			dmac_clean_range(start, end);
+			dmac_unmap_area(start, end,PCI_DMA_BIDIRECTIONAL);
 			dmac_flush_range(start, end);
 			
 			break;

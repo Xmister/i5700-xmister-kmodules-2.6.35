@@ -1,0 +1,52 @@
+#
+#   Makefile for eXtended Sector Remapper (XSR) driver on kernel 2.4
+#
+#   Copyright(C) 2004-2006, Samsung Electronics, Co., Ltd.
+#
+
+O_TARGET	:= xsrlink.o
+
+export-objs	:= xsr_base.o stl_block.o debug.o
+
+# XSR base module
+obj-$(CONFIG_RFS_XSR)			+= xsr.o
+
+# Should keep the build sequence. (xsr_base -> bml_block)
+xsr-objs	:= xsr_base.o bml_block.o bml_blkdev-24.o
+
+# This objects came from XSR, It will be never modified.
+xsr-objs	+= Core/BML/BMLInterface.o Core/BML/BadBlkMgr.o Core/BML/SWEcc.o
+xsr-objs	+= OAM/Linux/LinuxOAM.o
+
+ifeq ($(CONFIG_RFS_XSR_RAMNAND),y)
+xsr-objs	+= LLD/RamNAND/RamNAND.o
+xsr-objs	+= PAM/RamNAND/ramnand.o
+else
+xsr-objs	+= LLD/ONLD/ONLD.o
+
+# Please add you platform here
+obj-$(CONFIG_OMAP_OSK)			+= PAM/O5912OneS/omap5912osk.o
+obj-$(CONFIG_MACH_OMAP_APOLLON)		+= PAM/O2420OneS/apollon.o
+endif
+
+# XSR STL module
+obj-$(CONFIG_RFS_XSR_STL)		+= xsr_stl.o
+
+xsr_stl-objs	:= Core/STL/GarbageQueue.o Core/STL/OpQueue.o \
+		   Core/STL/ReadyQueue.o Core/STL/SamBufMgr.o \
+		   Core/STL/SectorMap.o Core/STL/VirtualNand.o \
+		   Core/STL/STLInterface.o \
+		   stl_block.o stl_blkdev-24.o
+
+# Benchmark program module
+obj-$(CONFIG_RFS_XSR_STL_BENCHMARK)	+= xsr_bench.o
+
+obj-$(CONFIG_RFS_XSR)			+= debug.o
+
+include $(TOPDIR)/Rules.make
+
+xsr.o: $(xsr-objs)
+	$(LD) -r -o $@ $(xsr-objs)
+
+xsr_stl.o: $(xsr_stl-objs)
+	$(LD) -r -o $@ $(xsr_stl-objs)

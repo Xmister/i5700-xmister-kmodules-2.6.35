@@ -1,0 +1,43 @@
+#
+# UFD configruations
+#
+
+mainmenu_option next_comment
+comment "RFS Flash Devices (XSR)"
+
+tristate 'XSR support' CONFIG_RFS_XSR
+
+if [ "$CONFIG_RFS_XSR" = "y" -o "$CONFIG_RFS_XSR" = "m" ]; then
+
+	dep_bool ' Interrupt enable' CONFIG_RFS_XSR_INT
+
+	dep_tristate ' STL block device support' CONFIG_RFS_XSR_STL $CONFIG_RFS_XSR
+	if [ "$CONFIG_RFS_XSR_STL" = "y" -o "$CONFIG_RFS_XSR_STL" = "m" ]; then
+		bool '  STL delete support' CONFIG_RFS_STL_DELETE
+	fi
+
+	bool ' Static partition support' CONFIG_RFS_XSR_STATIC_PARTITIONS
+
+	bool ' Dual NAND support (Experimental)' CONFIG_XSR_DUAL_DEVICE
+
+	if [ "$CONFIG_RFS_XSR" = 'y' -o "$CONFIG_RFS_XSR" = "m" ]; then
+	  hex "1st NAND flash Physical Location" CONFIG_XSR_FLASH_PHYS_ADDR1 0x00000000
+	fi
+
+	if [ "$CONFIG_XSR_DUAL_DEVICE" = 'y' ]; then
+	  hex "2nd NAND flash Physical Location" CONFIG_XSR_FLASH_PHYS_ADDR2 0x00000000
+	fi
+
+	bool ' RAM NAND support' CONFIG_RFS_XSR_RAMNAND
+
+	if [ "$CONFIG_RFS_XSR_RAMNAND" = 'y' ]; then
+	  int 'The number of blocks in RAM-NAND (MAX: 128)' CONFIG_RFS_XSR_RAMNAND_BLOCKS 128
+	fi
+
+	bool ' XSR Debug Message Enable' CONFIG_RFS_XSR_DEBUG
+
+	define_int	CONFIG_RFS_XSR_STL_SAM 100
+	define_bool	CONFIG_RFS_XSR_DMA n
+fi
+
+endmenu

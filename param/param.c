@@ -34,9 +34,10 @@
 
 #include <mach/hardware.h>
 #include <mach/param.h>
+#include <mach/spica.h>
 
-#include <XsrTypes.h>
-#include <BML.h>
+#include "XsrTypes.h"
+#include "BML.h"
 
 #define SECTOR_BITS		9
 

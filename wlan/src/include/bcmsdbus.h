@@ -1,13 +1,10 @@
-#ifndef	_sdio_api_h_
-#define	_sdio_api_h_
-
 /*
  * Definitions for API from sdio common code (bcmsdh) to individual
  * host controller drivers.
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -25,14 +22,12 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdbus.h,v 13.11.14.2.16.3 2009/04/13 18:54:22 Exp $
+ * $Id: bcmsdbus.h,v 13.11.14.2.6.6 2009/10/27 17:20:28 Exp $
  */
 
-/*
- * The following were:
- * 	incorrectly in bcmsdio.h
- * 	incorrectly named using SDIOH which indicates BRCM SDIO FPGA host controller
- */
+#ifndef	_sdio_api_h_
+#define	_sdio_api_h_
+
 
 #define SDIOH_API_RC_SUCCESS                          (0x00)
 #define SDIOH_API_RC_FAIL	                      (0x01)
@@ -78,11 +73,6 @@ extern SDIOH_API_RC sdioh_interrupt_set(sdioh_info_t *si, bool enable_disable);
 #if defined(DHD_DEBUG)
 extern bool sdioh_interrupt_pending(sdioh_info_t *si);
 #endif
-
-#ifdef BCMLXSDMMC
-extern int sdioh_claim_host_and_lock(sdioh_info_t *si);
-extern int sdioh_release_host_and_unlock(sdioh_info_t *si);
-#endif /* BCMLXSDMMC */
 
 /* read or write one byte using cmd52 */
 extern SDIOH_API_RC sdioh_request_byte(sdioh_info_t *si, uint rw, uint fnc, uint addr, uint8 *byte);

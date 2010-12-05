@@ -2,9 +2,9 @@
  *  BCMSDH interface glue
  *  implement bcmsdh API for SDIOH driver
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh.c,v 1.35.2.1.4.8.16.9 2009/07/28 00:46:09 Exp $
+ * $Id: bcmsdh.c,v 1.35.2.1.4.8.6.13 2010/04/06 03:26:57 Exp $
  */
 /* ****************** BCMSDH Interface Functions *************************** */
 
@@ -40,6 +40,7 @@
 
 #include <sdio.h>	/* sdio spec */
 
+#define SDIOH_API_ACCESS_RETRY_LIMIT	2
 const uint bcmsdh_msglevel = BCMSDH_ERROR_VAL;
 
 
@@ -54,6 +55,17 @@ struct bcmsdh_info
 };
 /* local copy of bcm sd handler */
 bcmsdh_info_t * l_bcmsdh = NULL;
+
+#if defined(OOB_INTR_ONLY) && defined(HW_OOB)
+extern int
+sdioh_enable_hw_oob_intr(void *sdioh, bool enable);
+
+void
+bcmsdh_enable_hw_oob_intr(bcmsdh_info_t *sdh, bool enable)
+{
+	sdioh_enable_hw_oob_intr(sdh->sdioh, enable);
+}
+#endif
 
 bcmsdh_info_t *
 bcmsdh_attach(osl_t *osh, void *cfghdl, void **regsva, uint irq)
@@ -194,6 +206,9 @@ bcmsdh_cfg_read(void *sdh, uint fnc_num, uint32 addr, int *err)
 {
 	bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
 	SDIOH_API_RC status;
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	int32 retry = 0;
+#endif
 	uint8 data = 0;
 
 	if (!bcmsdh)
@@ -201,7 +216,15 @@ bcmsdh_cfg_read(void *sdh, uint fnc_num, uint32 addr, int *err)
 
 	ASSERT(bcmsdh->init_success);
 
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	do {
+		if (retry)	/* wait for 1 ms till bus get settled down */
+			OSL_DELAY(1000);
+#endif
 	status = sdioh_cfg_read(bcmsdh->sdioh, fnc_num, addr, (uint8 *)&data);
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	} while (!SDIOH_API_SUCCESS(status) && (retry++ < SDIOH_API_ACCESS_RETRY_LIMIT));
+#endif
 	if (err)
 		*err = (SDIOH_API_SUCCESS(status) ? 0 : BCME_SDIO_ERROR);
 
@@ -216,13 +239,24 @@ bcmsdh_cfg_write(void *sdh, uint fnc_num, uint32 addr, uint8 data, int *err)
 {
 	bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
 	SDIOH_API_RC status;
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	int32 retry = 0;
+#endif
 
 	if (!bcmsdh)
 		bcmsdh = l_bcmsdh;
 
 	ASSERT(bcmsdh->init_success);
 
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	do {
+		if (retry)	/* wait for 1 ms till bus get settled down */
+			OSL_DELAY(1000);
+#endif
 	status = sdioh_cfg_write(bcmsdh->sdioh, fnc_num, addr, (uint8 *)&data);
+#ifdef SDIOH_API_ACCESS_RETRY_LIMIT
+	} while (!SDIOH_API_SUCCESS(status) && (retry++ < SDIOH_API_ACCESS_RETRY_LIMIT));
+#endif
 	if (err)
 		*err = SDIOH_API_SUCCESS(status) ? 0 : BCME_SDIO_ERROR;
 
@@ -338,7 +372,7 @@ bcmsdh_reg_read(void *sdh, uint32 addr, uint size)
 {
 	bcmsdh_info_t *bcmsdh = (bcmsdh_info_t *)sdh;
 	SDIOH_API_RC status;
-	uint32 word;
+	uint32 word = 0;
 	uint bar0 = addr & ~SBSDIO_SB_OFT_ADDR_MASK;
 
 	BCMSDH_INFO(("%s:fun = 1, addr = 0x%x, ", __FUNCTION__, addr));

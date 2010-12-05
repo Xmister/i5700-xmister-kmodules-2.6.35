@@ -3,9 +3,9 @@
  *     export functions to client drivers
  *     abstract OS and BUS specific details of SDIO
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -23,7 +23,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh.h,v 13.35.14.7.16.4 2009/04/13 18:54:22 Exp $
+ * $Id: bcmsdh.h,v 13.35.14.7.6.8 2009/10/14 04:22:25 Exp $
  */
 
 #ifndef	_bcmsdh_h_
@@ -190,6 +190,11 @@ extern void bcmsdh_unregister(void);
 extern bool bcmsdh_chipmatch(uint16 vendor, uint16 device);
 extern void bcmsdh_device_remove(void * sdh);
 
+#if defined(OOB_INTR_ONLY)
+extern int bcmsdh_register_oob_intr(void * dhdp);
+extern void bcmsdh_unregister_oob_intr(void);
+extern void bcmsdh_oob_intr_set(bool enable);
+#endif /* defined(OOB_INTR_ONLY) */
 /* Function to pass device-status bits to DHD. */
 extern uint32 bcmsdh_get_dstatus(void *sdh);
 
@@ -198,5 +203,6 @@ extern uint32 bcmsdh_cur_sbwad(void *sdh);
 
 /* Function to pass chipid and rev to lower layers for controlling pr's */
 extern void bcmsdh_chipinfo(void *sdh, uint32 chip, uint32 chiprev);
+
 
 #endif	/* _bcmsdh_h_ */

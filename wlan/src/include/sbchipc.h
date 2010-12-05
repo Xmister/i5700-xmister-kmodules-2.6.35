@@ -5,11 +5,11 @@
  * jtag, 0/1/2 uarts, clock frequency control, a watchdog interrupt timer,
  * gpio interface, extbus, and support for serial and parallel flashes.
  *
- * $Id: sbchipc.h,v 13.103.2.5.4.7.4.1 2009/01/21 23:56:57 Exp $
+ * $Id: sbchipc.h,v 13.103.2.5.4.5.2.9 2009/07/03 14:23:21 Exp $
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -823,50 +823,9 @@ typedef volatile struct {
 
 
 
-#define PMU1_PLL0_PLLCTL0		0
-#define PMU1_PLL0_PC0_P1DIV_MASK	0x00f00000
-#define PMU1_PLL0_PC0_P1DIV_SHIFT	20
-#define PMU1_PLL0_PC0_P2DIV_MASK	0x0f000000
-#define PMU1_PLL0_PC0_P2DIV_SHIFT	24
-
-
-#define PMU1_PLL0_PLLCTL1		1
-#define PMU1_PLL0_PC1_M1DIV_MASK	0x000000ff
-#define PMU1_PLL0_PC1_M1DIV_SHIFT	0
-#define PMU1_PLL0_PC1_M2DIV_MASK	0x0000ff00
-#define PMU1_PLL0_PC1_M2DIV_SHIFT	8
-#define PMU1_PLL0_PC1_M3DIV_MASK	0x00ff0000
-#define PMU1_PLL0_PC1_M3DIV_SHIFT	16
-#define PMU1_PLL0_PC1_M4DIV_MASK	0xff000000
-#define PMU1_PLL0_PC1_M4DIV_SHIFT	24
-
 #define DOT11MAC_880MHZ_CLK_DIVISOR_SHIFT 8
 #define DOT11MAC_880MHZ_CLK_DIVISOR_MASK (0xFF << DOT11MAC_880MHZ_CLK_DIVISOR_SHIFT)
 #define DOT11MAC_880MHZ_CLK_DIVISOR_VAL  (0xE << DOT11MAC_880MHZ_CLK_DIVISOR_SHIFT)
-
-
-#define PMU1_PLL0_PLLCTL2		2
-#define PMU1_PLL0_PC2_M5DIV_MASK	0x000000ff
-#define PMU1_PLL0_PC2_M5DIV_SHIFT	0
-#define PMU1_PLL0_PC2_M6DIV_MASK	0x0000ff00
-#define PMU1_PLL0_PC2_M6DIV_SHIFT	8
-#define PMU1_PLL0_PC2_NDIV_MODE_MASK	0x000e0000
-#define PMU1_PLL0_PC2_NDIV_MODE_SHIFT	17
-#define PMU1_PLL0_PC2_NDIV_INT_MASK	0x1ff00000
-#define PMU1_PLL0_PC2_NDIV_INT_SHIFT	20
-
-
-#define PMU1_PLL0_PLLCTL3		3
-#define PMU1_PLL0_PC3_NDIV_FRAC_MASK	0x00ffffff
-#define PMU1_PLL0_PC3_NDIV_FRAC_SHIFT	0
-
-
-#define PMU1_PLL0_PLLCTL4		4
-
-
-#define PMU1_PLL0_PLLCTL5		5
-#define PMU1_PLL0_PC5_CLK_DRV_MASK 0xffffff00
-#define PMU1_PLL0_PC5_CLK_DRV_SHIFT 8
 
 
 #define PMU2_PHY_PLL_PLLCTL		4
@@ -1041,8 +1000,6 @@ typedef volatile struct {
 #define CST4315_CBUCK_MODE_MASK		0x00000c00
 #define CST4315_CBUCK_MODE_BURST	0x00000400
 #define CST4315_CBUCK_MODE_LPBURST	0x00000c00
-
-
 
 #define PMU_MAX_TRANSITION_DLY	15000
 

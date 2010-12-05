@@ -1,0 +1,1 @@
+cmd_/home/spica/i5700.2/modules/camera/s3c_camera.o := /opt/ctng/bin/arm-spica-linux-uclibcgnueabi-ld -EL    -r -o /home/spica/i5700.2/modules/camera/s3c_camera.o /home/spica/i5700.2/modules/camera/s3c_camif.o /home/spica/i5700.2/modules/camera/s3c_camera_driver.o /home/spica/i5700.2/modules/camera/samsung/s5k4ca.o 

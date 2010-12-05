@@ -1,9 +1,9 @@
 /*
  * Broadcom Event  protocol definitions
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -24,7 +24,7 @@
  *
  * Dependencies: proto/bcmeth.h
  *
- * $Id: bcmevent.h,v 9.34.4.1.2.3.2.7 2009/07/09 00:06:36 Exp $
+ * $Id: bcmevent.h,v 9.34.4.1.20.16.64.1 2010/11/08 21:57:03 Exp $
  *
  */
 
@@ -130,7 +130,11 @@ typedef BWL_PRE_PACKED_STRUCT struct bcm_event {
 #define WLC_E_PFN_SCAN_COMPLETE	57	
 #define WLC_E_ACTION_FRAME      58      
 #define WLC_E_ACTION_FRAME_COMPLETE 59  
-#define WLC_E_LAST		60	
+
+#define WLC_E_ESCAN_RESULT	69
+#define WLC_E_WAKE_EVENT	70
+#define WLC_E_RELOAD		71
+#define WLC_E_LAST		72
 
 
 
@@ -157,9 +161,6 @@ typedef BWL_PRE_PACKED_STRUCT struct bcm_event {
 #define WLC_E_REASON_DEAUTH		2	
 #define WLC_E_REASON_DISASSOC		3	
 #define WLC_E_REASON_BCNS_LOST		4	
-#define WLC_E_REASON_MINTXRATE		9	
-#define WLC_E_REASON_TXFAIL		10	
-
 #define WLC_E_REASON_FAST_ROAM_FAILED	5	
 #define WLC_E_REASON_DIRECTED_ROAM	6	
 #define WLC_E_REASON_TSPEC_REJECTED	7	
@@ -204,12 +205,7 @@ typedef BWL_PRE_PACKED_STRUCT struct bcm_event {
 #define WLC_E_IF_ADD		1	
 #define WLC_E_IF_DEL		2	
 
-
-#define WLC_E_LINK_BCN_LOSS	1	
-#define WLC_E_LINK_DISASSOC	2	
-#define WLC_E_LINK_ASSOC_REC	3	
-#define WLC_E_LINK_BSSCFG_DIS	4	
-
+#define WLC_E_RELOAD_STATUS1	1
 
 #include <packed_section_end.h>
 

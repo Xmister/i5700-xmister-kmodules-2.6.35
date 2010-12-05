@@ -1,0 +1,1 @@
+cmd_/home/spica/i5700.2/modules_cyanogen/vibetonz/vibrator.o := /opt/ctng-5700/bin/arm-spica-linux-uclibcgnueabi-ld -EL    -r -o /home/spica/i5700.2/modules_cyanogen/vibetonz/vibrator.o /home/spica/i5700.2/modules_cyanogen/vibetonz/vibetonz.o 

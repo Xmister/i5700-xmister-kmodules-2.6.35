@@ -28,6 +28,8 @@
 #include <plat/gpio-cfg.h>
 #include <plat/sdhci.h>
 
+#define CONFIG_MACH_SPICA 1
+
 #ifdef CONFIG_MACH_SPICA
 #include <mach/spica.h>
 #elif CONFIG_MACH_SATURN
@@ -44,7 +46,8 @@
 #include <linux/spinlock.h>
 #include <linux/mmc/host.h>
 
-#include <linux/i2c/pmic.h>
+//Xmister comment
+//#include <linux/i2c/pmic.h>
 
 #if defined(CONFIG_MACH_BONANZA)
 #define GPIO_BT_WLAN_REG_ON GPIO_BT_WLAN_EN

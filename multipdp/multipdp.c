@@ -696,11 +696,14 @@ static void vnet_tx_timeout(struct net_device *net)
 
 static void vnet_setup(struct net_device *dev)
 {
-	dev->open		= vnet_open;
-	dev->stop		= vnet_stop;
-	dev->hard_start_xmit	= vnet_start_xmit;
-	dev->get_stats		= vnet_get_stats;
-	dev->tx_timeout		= vnet_tx_timeout;
+	static struct net_device_ops ops = {
+		.ndo_open	= vnet_open,
+		.ndo_stop	= vnet_stop,
+		.ndo_start_xmit	= vnet_start_xmit,
+		.ndo_get_stats	= vnet_get_stats,
+		.ndo_tx_timeout	= vnet_tx_timeout
+	};
+	dev->netdev_ops		= &ops;
 	dev->type		= ARPHRD_PPP;
 	dev->hard_header_len 	= 0;
 	dev->mtu		= MAX_PDP_DATA_LEN;

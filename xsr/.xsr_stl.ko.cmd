@@ -1,0 +1,1 @@
+cmd_/home/spica/i5700/kernel/cri/../../modules/xsr/xsr_stl.ko := /opt/ctng/bin/arm-spica-linux-uclibcgnueabi-ld -EL -r   -o /home/spica/i5700/kernel/cri/../../modules/xsr/xsr_stl.ko /home/spica/i5700/kernel/cri/../../modules/xsr/xsr_stl.o /home/spica/i5700/kernel/cri/../../modules/xsr/xsr_stl.mod.o

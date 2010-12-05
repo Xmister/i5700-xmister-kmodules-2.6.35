@@ -1,4 +1,5 @@
 #!/bin/sh
 
-make KDIR=/home/leshak/i5700/linux/kernel/kernel-i5700.2 CFLAGS=-O3
-cp *.ko /home/leshak/i5700/linux/initramfs/lib/modules
+#make clean
+make KDIR=/home/spica/i5700/kernel/$1 CFLAGS="-O3 -marm -mfpu=vfp -mtune=arm1176jzf-s"
+cp *.ko /home/leshak/i5700/linux/built_modules/$1

@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -21,7 +21,7 @@
  *
  * Fundamental types and constants relating to 802.11
  *
- * $Id: 802.11.h,v 9.219.4.1.4.5.20.8 2009/06/25 14:46:22 Exp $
+ * $Id: 802.11.h,v 9.219.4.1.4.5.6.11 2010/02/09 13:23:26 Exp $
  */
 
 
@@ -251,6 +251,7 @@ BWL_PRE_PACKED_STRUCT struct dot11_assoc_resp {
 	uint16			status;		
 	uint16			aid;		
 } BWL_POST_PACKED_STRUCT;
+#define DOT11_ASSOC_RESP_FIXED_LEN	6	
 
 BWL_PRE_PACKED_STRUCT struct dot11_action_measure {
 	uint8	category;
@@ -360,14 +361,24 @@ BWL_PRE_PACKED_STRUCT struct dot11_action_switch_channel {
 	dot11_brcm_extch_ie_t extch_ie;		
 } BWL_POST_PACKED_STRUCT;
 
-
-BWL_PRE_PACKED_STRUCT struct dot11_ext_csa {
-	uint8 id;	
-	uint8 len;	
+BWL_PRE_PACKED_STRUCT struct dot11_csa_body {
 	uint8 mode;	
 	uint8 reg;	
 	uint8 channel;	
 	uint8 count;	
+} BWL_POST_PACKED_STRUCT;
+
+
+BWL_PRE_PACKED_STRUCT struct dot11_ext_csa {
+	uint8 id;	
+	uint8 len;	
+	struct dot11_csa_body b; 
+} BWL_POST_PACKED_STRUCT;
+
+BWL_PRE_PACKED_STRUCT struct dot11y_action_ext_csa {
+	uint8	category;
+	uint8	action;
+	struct dot11_csa_body b;	
 } BWL_POST_PACKED_STRUCT;
 typedef struct dot11_ext_csa dot11_ext_csa_ie_t;
 #define DOT11_EXT_CSA_IE_LEN	4	
@@ -594,6 +605,9 @@ typedef struct wme_param_ie wme_param_ie_t;
 #define EDCF_TXOP_MIN                0           
 #define EDCF_TXOP_MAX                65535       
 #define EDCF_TXOP2USEC(txop)         ((txop) << 5)
+
+
+#define NON_EDCF_AC_BE_ACI_STA          0x02
 
 
 #define EDCF_AC_BE_ACI_STA           0x03	
@@ -962,9 +976,7 @@ BWL_PRE_PACKED_STRUCT struct dot11_management_notification {
 #define DOT11_MNG_EXT_CSA_ID			60	
 #define	DOT11_MNG_HT_ADD			61	
 #define	DOT11_MNG_EXT_CHANNEL_OFFSET		62	
-#ifdef BCMWAPI_WPI
 #define DOT11_MNG_WAPI_ID				68	
-#endif 
 #define	DOT11_MNG_HT_BSS_COEXINFO_ID		72	
 #define	DOT11_MNG_HT_BSS_CHANNEL_REPORT_ID	73	
 #define	DOT11_MNG_HT_OBSS_ID			74	
@@ -1024,7 +1036,8 @@ BWL_PRE_PACKED_STRUCT struct dot11_management_notification {
 #define DOT11_ACTION_ID_HT_MIMO_PS	1	
 
 
-#define DOT11_ACTION_ID_BSS_COEX_MNG	0	
+#define DOT11_PUB_ACTION_BSS_COEX_MNG	0	
+#define DOT11_PUB_ACTION_CHANNEL_SWITCH	4	
 
 
 #define DOT11_BA_ACTION_ADDBA_REQ	0	
@@ -1050,7 +1063,7 @@ BWL_PRE_PACKED_STRUCT struct dot11_addba_req {
 	uint16 addba_param_set;			
 	uint16 timeout;				
 	uint16 start_seqnum;			
-}BWL_POST_PACKED_STRUCT;
+} BWL_POST_PACKED_STRUCT;
 typedef struct dot11_addba_req dot11_addba_req_t;
 #define DOT11_ADDBA_REQ_LEN		9	
 
@@ -1061,7 +1074,7 @@ BWL_PRE_PACKED_STRUCT struct dot11_addba_resp {
 	uint16 status;				
 	uint16 addba_param_set;			
 	uint16 timeout;				
-}BWL_POST_PACKED_STRUCT;
+} BWL_POST_PACKED_STRUCT;
 typedef struct dot11_addba_resp dot11_addba_resp_t;
 #define DOT11_ADDBA_RESP_LEN		9	
 
@@ -1076,7 +1089,7 @@ BWL_PRE_PACKED_STRUCT struct dot11_delba {
 	uint8 action;				
 	uint16 delba_param_set;			
 	uint16 reason;				
-}BWL_POST_PACKED_STRUCT;
+} BWL_POST_PACKED_STRUCT;
 typedef struct dot11_delba dot11_delba_t;
 #define DOT11_DELBA_LEN			6	
 
@@ -1264,6 +1277,14 @@ typedef struct ht_prop_cap_ie ht_prop_cap_ie_t;
 #define AMPDU_RX_FACTOR_BASE	8*1024	
 #define AMPDU_DELIMITER_LEN	4	
 
+#define HT_CAP_EXT_PCO			0x0001
+#define HT_CAP_EXT_PCO_TTIME_MASK	0x0006
+#define HT_CAP_EXT_PCO_TTIME_SHIFT	1
+#define HT_CAP_EXT_MCS_FEEDBACK_MASK	0x0300
+#define HT_CAP_EXT_MCS_FEEDBACK_SHIFT	8
+#define HT_CAP_EXT_HTC			0x0400
+#define HT_CAP_EXT_RD_RESP		0x0800
+
 BWL_PRE_PACKED_STRUCT struct ht_add_ie {
 	uint8	ctl_ch;			
 	uint8	byte1;			
@@ -1402,12 +1423,11 @@ typedef struct vndr_ie vndr_ie_t;
 #define AES_KEY_SIZE		16	
 #define AES_MIC_SIZE		8	
 
-#ifdef BCMWAPI_WPI
 #define SMS4_KEY_LEN		16
 #define SMS4_WPI_CBC_MAC_LEN	16
-#endif
 
 
 #include <packed_section_end.h>
+
 
 #endif 

@@ -1,9 +1,9 @@
 /*
  * Driver O/S-independent utility routines
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -20,7 +20,7 @@
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
- * $Id: bcmutils.c,v 1.210.4.5.2.4.16.4 2009/07/13 18:04:07 Exp $
+ * $Id: bcmutils.c,v 1.210.4.5.2.4.6.19 2010/04/26 06:05:25 Exp $
  */
 
 #include <typedefs.h>
@@ -33,6 +33,11 @@
 #else
 #include <stdio.h>
 #include <string.h>
+/* This case for external supplicant use */
+#if defined(BCMEXTSUP)
+#include <bcm_osl.h>
+#endif
+
 #endif /* BCMDRIVER */
 #include <bcmendian.h>
 #include <bcmdevs.h>
@@ -40,9 +45,11 @@
 #include <proto/vlan.h>
 #include <proto/bcmip.h>
 #include <proto/802.1d.h>
+#include <proto/802.11.h>
 
 
 #ifdef BCMDRIVER
+
 
 /* copy a pkt buffer chain into a buffer */
 uint
@@ -500,6 +507,7 @@ pktq_mdeq(struct pktq *pq, uint prec_bmp, int *prec_out)
 #endif /* BCMDRIVER */
 
 
+
 const unsigned char bcm_ctype[] = {
 	_BCM_C,_BCM_C,_BCM_C,_BCM_C,_BCM_C,_BCM_C,_BCM_C,_BCM_C,			/* 0-7 */
 	_BCM_C, _BCM_C|_BCM_S, _BCM_C|_BCM_S, _BCM_C|_BCM_S, _BCM_C|_BCM_S, _BCM_C|_BCM_S, _BCM_C,
@@ -576,13 +584,13 @@ bcm_strtoul(char *cp, char **endp, uint base)
 		result = result*base + value;
 		/* Detected overflow */
 		if (result < last_result && !minus)
-			return ((unsigned long) -1);
+			return (ulong)-1;
 		last_result = result;
 		cp++;
 	}
 
 	if (minus)
-		result = (ulong)(result * -1);
+		result = (ulong)(-(long)result);
 
 	if (endp)
 		*endp = (char *)cp;
@@ -663,7 +671,8 @@ bcmstrncat(char *dest, const char *src, uint size)
 * Returns:  Pointer to the next token found. NULL when no more tokens are found.
 *****************************************************************************
 */
-char* bcmstrtok(char **string, const char *delimiters, char *tokdelim)
+char *
+bcmstrtok(char **string, const char *delimiters, char *tokdelim)
 {
 	unsigned char *str;
 	unsigned long map[8];
@@ -740,7 +749,8 @@ char* bcmstrtok(char **string, const char *delimiters, char *tokdelim)
 *             t1 > t2, when ignoring case sensitivity.
 *****************************************************************************
 */
-int bcmstricmp(const char *s1, const char *s2)
+int
+bcmstricmp(const char *s1, const char *s2)
 {
 	char dc, sc;
 
@@ -773,7 +783,8 @@ int bcmstricmp(const char *s1, const char *s2)
 *             t1 > t2, when ignoring case sensitivity.
 *****************************************************************************
 */
-int bcmstrnicmp(const char* s1, const char* s2, int cnt)
+int
+bcmstrnicmp(const char* s1, const char* s2, int cnt)
 {
 	char dc, sc;
 
@@ -808,18 +819,14 @@ bcm_ether_atoe(char *p, struct ether_addr *ea)
 	return (i == 6);
 }
 
+
 #if defined(CONFIG_USBRNDIS_RETAIL) || defined(NDIS_MINIPORT_DRIVER)
 /* registry routine buffer preparation utility functions:
  * parameter order is like strncpy, but returns count
  * of bytes copied. Minimum bytes copied is null char(1)/wchar(2)
  */
 ulong
-wchar2ascii(
-	char *abuf,
-	ushort *wbuf,
-	ushort wbuflen,
-	ulong abuflen
-)
+wchar2ascii(char *abuf, ushort *wbuf, ushort wbuflen, ulong abuflen)
 {
 	ulong copyct = 1;
 	ushort i;
@@ -890,7 +897,7 @@ prpkt(const char *msg, osl_t *osh, void *p0)
 	for (p = p0; p; p = PKTNEXT(osh, p))
 		prhex(NULL, PKTDATA(osh, p), PKTLEN(osh, p));
 }
-#endif 
+#endif	
 
 /* Takes an Ethernet frame and sets out-of-bound PKTPRIO.
  * Also updates the inplace vlan tag if requested.
@@ -1054,7 +1061,6 @@ bcm_iovar_lencheck(const bcm_iovar_t *vi, void *arg, int len, bool set)
 
 #endif	/* BCMDRIVER */
 
-
 /*******************************************************************************
  * crc8
  *
@@ -1077,7 +1083,7 @@ bcm_iovar_lencheck(const bcm_iovar_t *vi, void *arg, int len, bool set)
  * ****************************************************************************
  */
 
-static const uint8 crc8_table[256] = {
+STATIC const uint8 crc8_table[256] = {
     0x00, 0xF7, 0xB9, 0x4E, 0x25, 0xD2, 0x9C, 0x6B,
     0x4A, 0xBD, 0xF3, 0x04, 0x6F, 0x98, 0xD6, 0x21,
     0x94, 0x63, 0x2D, 0xDA, 0xB1, 0x46, 0x08, 0xFF,
@@ -1200,7 +1206,7 @@ hndcrc16(
 	return crc;
 }
 
-static const uint32 crc32_table[256] = {
+STATIC const uint32 crc32_table[256] = {
     0x00000000, 0x77073096, 0xEE0E612C, 0x990951BA,
     0x076DC419, 0x706AF48F, 0xE963A535, 0x9E6495A3,
     0x0EDB8832, 0x79DCB8A4, 0xE0D5E91E, 0x97D2D988,
@@ -1499,7 +1505,6 @@ bcm_format_hex(char *str, const void *bytes, int len)
 	}
 	return (int)(p - str);
 }
-#endif 
 
 /* pretty hex print a contiguous buffer */
 void
@@ -1527,6 +1532,7 @@ prhex(const char *msg, uchar *buf, uint nbytes)
 	if (p != line)
 		printf("%s\n", line);
 }
+#endif 
 
 
 /* Produce a human-readable string for boardrev */
@@ -1614,7 +1620,6 @@ bcm_mkiovar(char *name, char *data, uint datalen, char *buf, uint buflen)
 
 	return len;
 }
-
 
 /* Quarter dBm units to mW
  * Table starts at QDBM_OFFSET, so the first entry is mW for qdBm=153
@@ -1717,7 +1722,6 @@ bcm_bitcount(uint8 *bitmap, uint length)
 	return bitcount;
 }
 
-
 #ifdef BCMDRIVER
 
 /* Initialization of bcmstrbuf structure */
@@ -1796,5 +1800,39 @@ bcm_print_bytes(char *name, const uchar *data, int len)
 	}
 	printf("\n");
 }
+
+/*
+ * buffer length needed for wlc_format_ssid
+ * 32 SSID chars, max of 4 chars for each SSID char "\xFF", plus NULL.
+ */
+
+#if defined(WLTINYDUMP) || defined(WLMSG_INFORM) || defined(WLMSG_ASSOC) || \
+	defined(WLMSG_PRPKT) || defined(WLMSG_WSEC)
+int
+bcm_format_ssid(char* buf, const uchar ssid[], uint ssid_len)
+{
+	uint i, c;
+	char *p = buf;
+	char *endp = buf + SSID_FMT_BUF_LEN;
+
+	if (ssid_len > DOT11_MAX_SSID_LEN) ssid_len = DOT11_MAX_SSID_LEN;
+
+	for (i = 0; i < ssid_len; i++) {
+		c = (uint)ssid[i];
+		if (c == '\\') {
+			*p++ = '\\';
+			*p++ = '\\';
+		} else if (bcm_isprint((uchar)c)) {
+			*p++ = (char)c;
+		} else {
+			p += snprintf(p, (endp - p), "\\x%02X", c);
+		}
+	}
+	*p = '\0';
+	ASSERT(p < endp);
+
+	return (int)(p - buf);
+}
+#endif 
 
 #endif /* BCMDRIVER */

@@ -1,0 +1,48 @@
+#
+#   Makefile for eXtended Sector Remapper (XSR) driver on kernel 2.6
+#
+#   Copyright(C) 2004-2006, Samsung Electronics, Co., Ltd.
+#
+
+# XSR base module
+obj-$(CONFIG_RFS_XSR)			+= xsr.o
+
+# Should keep the build sequence. (xsr_base -> bml_block)
+xsr-objs	:= xsr_base.o bml_block.o bml_blkdev.o
+
+# This objects came from XSR, It will be never modified.
+xsr-objs	+= Core/BML/BMLInterface.o Core/BML/BadBlkMgr.o Core/BML/SWEcc.o
+xsr-objs	+= OAM/Linux/LinuxOAM.o
+
+ifeq ($(CONFIG_RFS_XSR_RAMNAND),y)
+xsr-objs	+= LLD/RamNAND/RamNAND.o
+xsr-objs	+= PAM/RamNAND/ramnand.o
+else
+xsr-objs	+= LLD/OCLD/OCLD.o
+xsr-objs	+= LLD/OCLD/OCLD_asm.o
+#xsr-objs	+= LLD/ONLD/ONLD.o
+
+# Please add your platform here
+ifeq ($(CONFIG_MACH_OMAP_APOLLON),y)
+xsr-objs        += PAM/O2420OneS/apollon.o
+#else
+#xsr-objs        += PAM/O2430OneS/poseidon.o
+endif #CONFIG_MACH_OMAP_APOLLON
+
+ifeq ($(CONFIG_CPU_S3C6410),y)
+xsr-objs	+= PAM/S3C6410/s3c6410.o
+endif #CONFIG_CPU_S3C6410
+endif
+
+# XSR STL module
+obj-$(CONFIG_RFS_XSR_STL)		+= xsr_stl.o
+
+xsr_stl-objs	:= Core/STL/GarbageQueue.o Core/STL/OpQueue.o \
+		   Core/STL/ReadyQueue.o Core/STL/SamBufMgr.o \
+		   Core/STL/SectorMap.o Core/STL/VirtualNand.o \
+		   Core/STL/STLInterface.o \
+		   stl_block.o stl_blkdev.o
+
+obj-$(CONFIG_RFS_XSR_STL_BENCHMARK)	+= xsr_bench.o
+
+obj-$(CONFIG_RFS_XSR_DEBUG)		+= debug.o

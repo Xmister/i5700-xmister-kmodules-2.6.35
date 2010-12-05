@@ -1,9 +1,9 @@
 /*
  * BCMSDH Function Driver for the native SDIO/MMC driver in the Linux Kernel
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: bcmsdh_sdmmc.h,v 13.1.2.2.6.2 2009/04/09 17:21:36 Exp $
+ * $Id: bcmsdh_sdmmc.h,v 13.1.2.1.8.7 2009/10/27 18:22:52 Exp $
  */
 
 #ifndef __BCMSDH_SDMMC_H__
@@ -117,7 +117,6 @@ extern void sdioh_sdmmc_free_irq(uint irq, sdioh_info_t *sd);
 typedef struct _BCMSDH_SDMMC_INSTANCE {
 	sdioh_info_t	*sd;
 	struct sdio_func *func[SDIOD_MAX_IOFUNCS];
-	uint32 host_claimed;
 } BCMSDH_SDMMC_INSTANCE, *PBCMSDH_SDMMC_INSTANCE;
 
 #endif /* __BCMSDH_SDMMC_H__ */

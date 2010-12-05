@@ -26,9 +26,13 @@
 #include <linux/poll.h>
 #include <asm/io.h>
 #include <asm/irq.h>
-#include <plat/regs-gpio.h>
+//#include <plat/regs-gpio.h>
 #include <plat/gpio-cfg.h>
 #include <mach/hardware.h>
+#include <mach/gpio.h>
+#include <mach/spica.h>
+#include <linux/sched.h>
+
 
 #ifdef CONFIG_EVENT_LOGGING
 #include <linux/time.h>
@@ -47,7 +51,7 @@
 #include "BML.h"
 #include "OCLDReg.h"
 #include "OCLD.h"
-#include <mach/param.h>
+//#include <mach/param.h>
 
 #define DRIVER_ID			"$Id: dpram.c, v0.01 2008/12/29 08:00:00 $"
 #define DRIVER_NAME 		"DPRAM"
@@ -1948,9 +1952,10 @@ static void res_ack_tasklet_handler(unsigned long data)
 	if (device && device->serial.tty) {
 		struct tty_struct *tty = device->serial.tty;
 
+		//Xmister
 		if ((tty->flags & (1 << TTY_DO_WRITE_WAKEUP)) &&
-				tty->ldisc.ops->write_wakeup) {
-			(tty->ldisc.ops->write_wakeup)(tty);
+				tty->ldisc->ops->write_wakeup) {
+			(tty->ldisc->ops->write_wakeup)(tty);
 		}
 
 		wake_up_interruptible(&tty->write_wait);

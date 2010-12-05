@@ -1,0 +1,5 @@
+0x00000000	gpio_regon_lock_init	/home/spica/i5700.2/modules_cyanogen/wlan/dhd	EXPORT_SYMBOL_GPL
+0x00000000	gpio_wlan_poweron	/home/spica/i5700.2/modules_cyanogen/wlan/dhd	EXPORT_SYMBOL_GPL
+0x00000000	gpio_wlan_poweroff	/home/spica/i5700.2/modules_cyanogen/wlan/dhd	EXPORT_SYMBOL_GPL
+0x00000000	bcmsdh_remove	/home/spica/i5700.2/modules_cyanogen/wlan/dhd	EXPORT_SYMBOL
+0x00000000	bcmsdh_probe	/home/spica/i5700.2/modules_cyanogen/wlan/dhd	EXPORT_SYMBOL

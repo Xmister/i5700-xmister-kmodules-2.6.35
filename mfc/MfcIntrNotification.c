@@ -22,6 +22,7 @@
 #include "s3c-mfc.h"
 #include "MfcIntrNotification.h"
 #include "MfcSfr.h"
+#include <linux/sched.h>
 
 
 extern wait_queue_head_t	WaitQueue_MFC;

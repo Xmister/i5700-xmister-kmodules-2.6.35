@@ -60,6 +60,9 @@
 #include <mach/hardware.h>
 #include <mach/map.h>
 
+//Xmister
+#define S3C64XX_PA_ROTATOR (0x77200000)
+
 #include <plat/pm.h>
 #include <plat/power-clock-domain.h>
 

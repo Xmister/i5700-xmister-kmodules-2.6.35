@@ -2,9 +2,9 @@
  * Misc utility routines for accessing chip-specific features
  * of the SiliconBackplane-based Broadcom chips.
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: siutils.c,v 1.662.4.4.4.22.4.1 2008/12/22 01:19:31 Exp $
+ * $Id: siutils.c,v 1.662.4.4.4.16.4.28 2010/06/23 21:37:54 Exp $
  */
 
 #include <typedefs.h>
@@ -41,6 +41,7 @@
 #include <sbsdio.h>
 #include <sbhnddma.h>
 #include <sbsdpcmdev.h>
+#include <bcmsdpcm.h>
 #include <hndpmu.h>
 
 #include "siutils_priv.h"
@@ -286,6 +287,7 @@ si_buscore_setup(si_info_t *sii, chipcregs_t *cc, uint bustype, uint32 savewin,
 }
 
 
+
 static si_info_t *
 si_doattach(si_info_t *sii, uint devid, osl_t *osh, void *regs,
                        uint bustype, void *sdh, char **vars, uint *varsz)
@@ -387,6 +389,8 @@ si_doattach(si_info_t *sii, uint devid, osl_t *osh, void *regs,
 	}
 
 	pvars = NULL;
+
+
 
 		if (sii->pub.ccrev >= 20) {
 			cc = (chipcregs_t *)si_setcore(sih, CC_CORE_ID, 0);
@@ -800,6 +804,19 @@ si_iscoreup(si_t *sih)
 	}
 }
 
+void
+si_write_wrapperreg(si_t *sih, uint32 offset, uint32 val)
+{
+	/* only for 4319, no requirement for SOCI_SB */
+	if (CHIPTYPE(sih->socitype) == SOCI_AI) {
+		ai_write_wrap_reg(sih, offset, val);
+	}
+	else
+		return;
+
+	return;
+}
+
 uint
 si_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 {
@@ -967,6 +984,14 @@ void
 si_watchdog(si_t *sih, uint ticks)
 {
 	if (PMUCTL_ENAB(sih)) {
+
+		if ((sih->chip == BCM4319_CHIP_ID) && (sih->chiprev == 0) && (ticks != 0)) {
+			si_corereg(sih, SI_CC_IDX, OFFSETOF(chipcregs_t, clk_ctl_st), ~0, 0x2);
+			si_setcore(sih, USB20D_CORE_ID, 0);
+			si_core_disable(sih, 1);
+			si_setcore(sih, CC_CORE_ID, 0);
+		}
+
 		if (ticks == 1)
 			ticks = 2;
 		si_corereg(sih, SI_CC_IDX, OFFSETOF(chipcregs_t, pmuwatchdog), ~0, ticks);
@@ -997,7 +1022,7 @@ si_sdio_init(si_t *sih)
 {
 	si_info_t *sii = SI_INFO(sih);
 
-	if (((sih->buscoretype == PCMCIA_CORE_ID) && (sih->buscorerev >= 8)) || \
+	if (((sih->buscoretype == PCMCIA_CORE_ID) && (sih->buscorerev >= 8)) ||
 	    (sih->buscoretype == SDIOD_CORE_ID)) {
 		uint idx;
 		sdpcmd_regs_t *sdpregs;
@@ -1011,7 +1036,7 @@ si_sdio_init(si_t *sih)
 			sdpregs = (sdpcmd_regs_t *)si_setcore(sih, SDIOD_CORE_ID, 0);
 		ASSERT(sdpregs);
 
-		SI_MSG(("si_sdio_init: For PCMCIA/SDIO Corerev %d, enable ints from core %d " \
+		SI_MSG(("si_sdio_init: For PCMCIA/SDIO Corerev %d, enable ints from core %d "
 		        "through SD core %d (%p)\n",
 		        sih->buscorerev, idx, sii->curidx, sdpregs));
 

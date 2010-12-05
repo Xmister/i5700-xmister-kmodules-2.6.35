@@ -177,6 +177,7 @@
 #define SENSOR_FLASH_CAMERA	(1 << 29)
 #define SENSOR_FLASH_MOVIE	(1 << 30)
 #define SENSOR_EXIF_DATA	(1 << 31)
+#define SENSOR_FRAMERATE    (1 << 32) //hjkang_DC11
 
 #ifdef CONFIG_VIDEO_SAMSUNG_CE131
 	#define SENSOR_GET_FWVERSION	(1 << 31) | ( 1 << 0)  

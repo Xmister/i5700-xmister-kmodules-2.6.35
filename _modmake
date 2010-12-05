@@ -1,26 +1,68 @@
 #!/bin/sh
 
-cd ~/i5700.2/modules
+PARAMS=$1
+
 cd mfc
-../_mm1
+../_mm1 $PARAMS
 cd ..
 
 cd wlan
-../_mm1
+../_mm1 $PARAMS
 cd ..
 
 cd btgpio
-../_mm1
+../_mm1 $PARAMS
 cd ..
 
 cd dpram
-../_mm1
+../_mm1 $PARAMS
 cd ..
 
 cd multipdp
-../_mm1
+../_mm1 $PARAMS
 cd ..
 
 cd pp
-../_mm1
+../_mm1 $PARAMS
 cd ..
+
+cd rotator
+../_mm1 $PARAMS
+cd ..
+
+cd vibetonz
+../_mm1 $PARAMS
+cd ..
+
+cd camera
+../_mm1 $PARAMS
+cd ..
+
+cd cmm
+../_mm1 $PARAMS
+cd ..
+
+cd g2d
+../_mm1 $PARAMS
+cd ..
+
+cd g3d
+../_mm1 $PARAMS
+cd ..
+
+cd jpeg
+../_mm1 $PARAMS
+cd ..
+
+cd param
+../_mm1 $PARAMS
+cd ..
+
+cd xsr
+../_mm1 $PARAMS
+cd ..
+
+cd rfs
+../_mm1 $PARAMS
+cd ..
+

@@ -14,6 +14,9 @@ ifeq ($(CONFIG_MACH_INSTINCTQ),y)
 EXTRA_CFLAGS 	+= -DCONFIG_VIDEO_SAMSUNG_S5K4CA -DCONFIG_FLASH_AAT1271A 
 #EXTRA_CFLAGS 	+= -DCONFIG_VIDEO_SAMSUNG_S5K4CA
 endif
+ifeq ($(CONFIG_MACH_INFOBOWLQ),y)
+EXTRA_CFLAGS 	+= -DCONFIG_VIDEO_SAMSUNG_S5K4CA -DCONFIG_FLASH_AAT1271A 
+endif
 ifeq ($(CONFIG_MACH_NAOS),y)
 EXTRA_CFLAGS 	+= -DCONFIG_VIDEO_SAMSUNG_S5K4CA  
 endif
@@ -60,6 +63,9 @@ endif
 ifeq ($(CONFIG_MACH_INSTINCTQ),y)
 #s3c_camera-y += $(SENSOR_DIR)/ait848.o
 endif
+ifeq ($(CONFIG_MACH_INFOBOWLQ),y)
+#s3c_camera-y += $(SENSOR_DIR)/ait848.o
+endif
 ifeq ($(CONFIG_MACH_NAOS),y)
 #s3c_camera-y += $(SENSOR_DIR)/ait848.o
 endif
@@ -96,6 +102,9 @@ endif
 #
 
 ifeq ($(CONFIG_MACH_INSTINCTQ),y)
+s3c_camera-y += $(SENSOR_DIR)/flash/aat1271a.o
+endif
+ifeq ($(CONFIG_MACH_INFOBOWLQ),y)
 s3c_camera-y += $(SENSOR_DIR)/flash/aat1271a.o
 endif
 ifeq ($(CONFIG_MACH_CYGNUS),y)

@@ -2,9 +2,9 @@
  * Generic Broadcom Home Networking Division (HND) DMA engine HW interface
  * This supports the following chips: BCM42xx, 44xx, 47xx .
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: sbhnddma.h,v 13.11.250.5 2008/05/07 20:23:46 Exp $
+ * $Id: sbhnddma.h,v 13.11.250.5.16.1 2009/07/21 14:04:51 Exp $
  */
 
 
@@ -61,8 +61,9 @@ typedef volatile struct {
 } dma32dd_t;
 
 
-#define	D32MAXRINGSZ	4096
-#define	D32RINGALIGN	4096
+#define	D32RINGALIGN_BITS	12
+#define	D32MAXRINGSZ	(1 << D32RINGALIGN_BITS)
+#define	D32RINGALIGN	(1 << D32RINGALIGN_BITS)
 #define	D32MAXDD	(D32MAXRINGSZ / sizeof (dma32dd_t))
 
 
@@ -188,8 +189,9 @@ typedef volatile struct {
 } dma64dd_t;
 
 
-#define	D64MAXRINGSZ	8192
-#define	D64RINGALIGN	8192
+#define D64RINGALIGN_BITS 13	
+#define	D64MAXRINGSZ	(1 << D64RINGALIGN_BITS)
+#define	D64RINGALIGN	(1 << D64RINGALIGN_BITS)
 #define	D64MAXDD	(D64MAXRINGSZ / sizeof (dma64dd_t))
 
 

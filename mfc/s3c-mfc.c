@@ -552,7 +552,7 @@ static int s3c_mfc_ioctl(struct inode *inode, struct file *file, unsigned
 			Copy_To_User((MFC_ENC_EXE_ARG *)arg, &args.enc_exe, sizeof(MFC_ENC_EXE_ARG));
 			
 			// added by RainAde for cache coherency
-			cpu_cache.dma_inv_range(pMfcInst->pStrmBuf, pMfcInst->pStrmBuf + MFC_LINE_BUF_SIZE_PER_INSTANCE);
+			//cpu_cache.dma_inv_range(pMfcInst->pStrmBuf, pMfcInst->pStrmBuf + MFC_LINE_BUF_SIZE_PER_INSTANCE);
 			
 			MFC_Mutex_Release();
 			break;
@@ -629,8 +629,8 @@ static int s3c_mfc_ioctl(struct inode *inode, struct file *file, unsigned
 			Copy_To_User((MFC_DEC_EXE_ARG *)arg, &args.dec_exe, sizeof(MFC_DEC_EXE_ARG));
 
 			// added by RainAde for cache coherency
-			tmp = (pMfcInst->width * pMfcInst->height * 3) >> 1;
-			cpu_cache.dma_inv_range(pMfcInst->pFramBuf, pMfcInst->pFramBuf + tmp);
+			//tmp = (pMfcInst->width * pMfcInst->height * 3) >> 1;
+			//cpu_cache.dma_inv_range(pMfcInst->pFramBuf, pMfcInst->pFramBuf + tmp);
 
 			MFC_Mutex_Release();
 			break;

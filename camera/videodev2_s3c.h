@@ -214,6 +214,7 @@ const struct v4l2_fmtdesc fimc_preview_formats[] = {
 #define VIDIOC_S_FLASH_CAMERA		_IOW  ('V', 98, void *)
 #define VIDIOC_S_FLASH_MOVIE		_IOW  ('V', 99, void *)
 #define VIDIOC_S_EXIF_DATA			_IOW  ('V',100, void *)
+#define VIDIOC_S_FRAMERATE			_IOW  ('V',101, void *) //hjkang_DC11
 
 #ifdef CONFIG_VIDEO_SAMSUNG_CE131
 	#define VIDIOC_S_SENSOR_DIG_ZOOM	_IOW  ('V',101, void *)

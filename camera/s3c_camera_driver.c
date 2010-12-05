@@ -18,7 +18,7 @@
  * along with this program; if not, write to the Free Software
  * Foundation, Inc., 59 Temple Place, Suite 330, Boston, MA  02111-1307  USA
  */
-
+#include <linux/cpufreq.h>
 #include <linux/version.h>
 #include <linux/module.h>
 #include <linux/delay.h>
@@ -2211,7 +2211,10 @@ long s3c_camif_ioctl(struct file *file, unsigned int cmd, unsigned long arg)
 		ctrl = (struct v4l2_control *) arg; 
 		ret = cfg->cis->sensor->driver->command(cfg->cis->sensor, SENSOR_WB, (void *) arg);
 		break;
-
+    case VIDIOC_S_FRAMERATE: //hjkang_DC11
+		ctrl = (struct v4l2_control *) arg; 
+		ret = cfg->cis->sensor->driver->command(cfg->cis->sensor, SENSOR_FRAMERATE, (void *) arg);
+		break;
 	case VIDIOC_S_BRIGHTNESS:
 		ctrl = (struct v4l2_control *) arg; 
 		ret = cfg->cis->sensor->driver->command(cfg->cis->sensor, SENSOR_BRIGHTNESS, (void *) arg);
@@ -3068,6 +3071,12 @@ void s3c_camif_unregister_sensor(camif_cis_t *cis)
 	cis->init_sensor = 0;
 
 	__TRACE_CAMERA_DRV(printk("[CAM-DRV] -s3c_camif_unregister_sensor\n"));
+
+/*-------------------------------------------------------------*/
+/* antibyte - little hack to restore the conservative governor */
+	int ret = cpufreq_set_policy(0, "conservative   ");
+	printk("[CAM-DRV] set conservative cpufreq governor : %s\n", ret ? "failed":"ok");
+/*-------------------------------------------------------------*/
 }
 
 module_init(s3c_camif_register);

@@ -1,0 +1,85 @@
+#
+# Unified Flash Device configuration
+#
+
+menu "RFS Flash Devices (XSR)"
+
+config RFS_XSR
+	tristate "RFS Flash Devices"
+	help
+	  eXtended Sector Remapper device
+
+config RFS_XSR_INT
+	bool "Interrupt enable"
+	depends on RFS_XSR
+	help
+	 Enable H/W interrupt of device.
+
+config RFS_XSR_STL
+	tristate "STL block device support"
+	depends on RFS_XSR
+	help
+	  STL block device support
+
+config RFS_STL_DELETE
+	bool "STL delete support"
+	depends on RFS_XSR_STL
+	help
+	  STL delete support
+
+config RFS_XSR_STL_BENCHMARK
+	tristate "XSR benchmark tool support"
+	depends on RFS_XSR
+	help
+	  XSR benchmark tool.
+
+config RFS_XSR_STATIC_PARTITIONS
+	bool "Static partition support"
+	depends on RFS_XSR
+	help
+	  Use hard-coded static partition information.
+
+config XSR_DUAL_DEVICE
+	bool "Dual NAND support (Experimental)"
+	depends on RFS_XSR
+	help
+	  Support dual nand flash memory.
+
+config XSR_FLASH_PHYS_ADDR0
+        hex "1st Denali Controller Commmand Map Location"
+        depends on RFS_XSR
+        default "0x20000000"
+        help
+          This is the physical address in your flash memory the xsr will
+          be linked for and stored to.  This address is dependent on your
+          own flash usage.
+
+config XSR_FLASH_PHYS_ADDR1
+        hex "1st Denali Controller Physical Location"
+        depends on RFS_XSR
+        default "0x70100000"
+        help
+          This is the physical address in your flash memory the xsr will
+          be linked for and stored to.  This address is dependent on your
+          own flash usage.
+
+config XSR_FLASH_PHYS_ADDR2
+        hex "2nd NAND flash Physical Location"
+        depends on XSR_DUAL_DEVICE
+        default "0x0a000000"
+        help
+          This is the physical address in your second flash memory to support
+          dual-chips. The xsr will be linked for and stored to. This address
+          is dependent on your own flash usage.
+
+config RFS_XSR_STL_SAM
+	int 
+	depends on RFS_XSR
+	default 100
+
+config RFS_XSR_DEBUG
+	bool "RFS XSR Debug Enable"
+	depends on RFS_XSR
+	default y
+
+endmenu

@@ -1,7 +1,7 @@
 /*
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -18,14 +18,12 @@
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
- * $Id: typedefs.h,v 1.85.34.1.16.3 2008/12/19 05:29:50 Exp $
+ * $Id: typedefs.h,v 1.85.34.1.2.5 2009/01/27 04:09:40 Exp $
  */
 
 
 #ifndef _TYPEDEFS_H_
 #define _TYPEDEFS_H_
-
-
 
 #ifdef SITE_TYPEDEFS
 
@@ -34,8 +32,6 @@
 #include "site_typedefs.h"
 
 #else
-
-
 
 
 
@@ -53,7 +49,6 @@
 
 
 #endif	
-
 
 #if defined(__x86_64__)
 #define TYPEDEF_UINTPTR
@@ -260,7 +255,7 @@ typedef float64 float_t;
 
 #if defined(__GNUC__)
 	#define BWL_COMPILER_GNU
-#elif __CC_ARM
+#elif defined(__CC_ARM)
 	#define BWL_COMPILER_ARMCC
 #else
 	#error "Unknown compiler!"

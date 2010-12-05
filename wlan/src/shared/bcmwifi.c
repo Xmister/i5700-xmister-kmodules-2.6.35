@@ -3,9 +3,9 @@
  * Contents are wifi-specific, used by any kernel or app-level
  * software that might want wifi things as it grows.
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -22,7 +22,7 @@
  *      Notwithstanding the above, under no circumstances may you combine this
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
- * $Id: bcmwifi.c,v 1.18.24.2.18.1 2009/07/09 00:07:48 Exp $
+ * $Id: bcmwifi.c,v 1.18.24.2.4.1 2009/09/25 00:32:01 Exp $
  */
 
 
@@ -42,10 +42,6 @@
 
 #if defined(WIN32) && (defined(BCMDLL) || defined(WLMDLL))
 #include <bcmstdlib.h> 	
-#endif
-
-#ifndef ASSERT
-#define ASSERT
 #endif
 
 
@@ -87,7 +83,7 @@ wf_chspec_ntoa(chanspec_t chspec, char *buf)
 chanspec_t
 wf_chspec_aton(char *a)
 {
-	char *endp;
+	char *endp = NULL;
 	uint channel, band, bw, ctl_sb;
 	char c;
 
@@ -146,77 +142,6 @@ done:
 	return (channel | band | bw | ctl_sb);
 }
 
-
-bool
-wf_chspec_malformed(chanspec_t chanspec)
-{
-	
-	if (!CHSPEC_IS5G(chanspec) && !CHSPEC_IS2G(chanspec))
-		return TRUE;
-	
-	if (!CHSPEC_IS40(chanspec) && !CHSPEC_IS20(chanspec))
-		return TRUE;
-
-	
-	if (CHSPEC_IS20(chanspec)) {
-		if (!CHSPEC_SB_NONE(chanspec))
-			return TRUE;
-	} else {
-		if (!CHSPEC_SB_UPPER(chanspec) && !CHSPEC_SB_LOWER(chanspec))
-		return TRUE;
-	}
-
-	return FALSE;
-}
-
-
-uint8
-wf_chspec_ctlchan(chanspec_t chspec)
-{
-	uint8 ctl_chan;
-
-	
-	if (CHSPEC_CTL_SB(chspec) == WL_CHANSPEC_CTL_SB_NONE) {
-		return CHSPEC_CHANNEL(chspec);
-	} else {
-		
-		ASSERT(CHSPEC_BW(chspec) == WL_CHANSPEC_BW_40);
-		
-		if (CHSPEC_CTL_SB(chspec) == WL_CHANSPEC_CTL_SB_UPPER) {
-			
-			ctl_chan = UPPER_20_SB(CHSPEC_CHANNEL(chspec));
-		} else {
-			ASSERT(CHSPEC_CTL_SB(chspec) == WL_CHANSPEC_CTL_SB_LOWER);
-			
-			ctl_chan = LOWER_20_SB(CHSPEC_CHANNEL(chspec));
-		}
-	}
-
-	return ctl_chan;
-}
-
-chanspec_t
-wf_chspec_ctlchspec(chanspec_t chspec)
-{
-	chanspec_t ctl_chspec = 0;
-	uint8 channel;
-
-	ASSERT(!wf_chspec_malformed(chspec));
-
-	
-	if (CHSPEC_CTL_SB(chspec) == WL_CHANSPEC_CTL_SB_NONE) {
-		return chspec;
-	} else {
-		if (CHSPEC_CTL_SB(chspec) == WL_CHANSPEC_CTL_SB_UPPER) {
-			channel = UPPER_20_SB(CHSPEC_CHANNEL(chspec));
-		} else {
-			channel = LOWER_20_SB(CHSPEC_CHANNEL(chspec));
-		}
-		ctl_chspec = channel | WL_CHANSPEC_BW_20 | WL_CHANSPEC_CTL_SB_NONE;
-		ctl_chspec |= CHSPEC_BAND(chspec);
-	}
-	return ctl_chspec;
-}
 
 int
 wf_mhz2channel(uint freq, uint start_factor)

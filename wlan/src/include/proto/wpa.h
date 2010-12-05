@@ -1,9 +1,9 @@
 /*
  * Fundamental types and constants relating to WPA
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: wpa.h,v 1.16.166.1.34.1 2008/10/25 00:31:35 Exp $
+ * $Id: wpa.h,v 1.16.166.1.20.1 2008/11/20 00:51:31 Exp $
  */
 
 

@@ -1,6 +1,7 @@
 /****************************************************************************
 **
 ** COPYRIGHT(C)	: Samsung Electronics Co.Ltd, 2006-2015 ALL RIGHTS RESERVED
+** Modified by Gabriel-LG (l.gorter@gmail.com)
 **
 *****************************************************************************/
 #include <linux/module.h>
@@ -12,6 +13,7 @@
 
 #include <asm/io.h>
 #include <mach/hardware.h>
+#include <mach/spica.h>
 #include <plat/gpio-cfg.h>
 #include <linux/delay.h>
 
@@ -28,20 +30,16 @@
 /*******************************************************************************/
 
 #define OFFSET_VIBRATOR_ON      (0x1 << 0)
-
-#define VIBRATOR_ON_WEEK_PERIOD		(300) // vibrator week value
-#define VIBRATOR_OFF_WEEK_PERIOD	(300)
-
-#define VIBRATOR_ON_STRONG_PERIOD	(300) // vibrator strong value
-#define VIBRATOR_OFF_STRONG_PERIOD	(3) 
-
+#define VIBRATOR_OFF_STRONG_PERIOD	(pwm_freq/100) //1% duty-cycle
+#define VIBRATOR_OFF_WEEK_PERIOD	(pwm_freq/3)   //33% duty-cycle 
 #define VIBRATOR_STRENGTH (0x40000000) // vibrator Week & Strong flag value
-
-static struct hrtimer timer;
 
 static int max_timeout = 5000;
 static int vibrator_value = 0;
+int pwm_freq = 295; //175Hz for Spica @ 800Mhz
 
+static struct hrtimer timer;
+static struct timed_output_dev timed_output_vt;
 spinlock_t vib_lock;
 
 extern int s3c6410_timer_setup (int channel, int usec, unsigned long g_tcnt, unsigned long g_tcmp);
@@ -52,12 +50,11 @@ extern void s3c_bat_set_compensation_for_drv(int mode,int offset);
 
 static int set_vibetonz(int timeout)
 {	
-	int val = 0;
+	//int val = 0;
 	
 	if(!timeout) {	
 		/* 2009.09.13(sunday) drkim - adjust vibratonz strength */
-        s3c6410_timer_setup(1,10,VIBRATOR_ON_STRONG_PERIOD, VIBRATOR_OFF_STRONG_PERIOD);
-		
+        //s3c6410_timer_setup(1,10,VIBRATOR_ON_STRONG_PERIOD, VIBRATOR_OFF_STRONG_PERIOD);
 		gpio_set_value(GPIO_VIB_EN, GPIO_LEVEL_LOW);
 
 #if defined(CONFIG_MACH_SPICA) || defined(CONFIG_MACH_INSTINCTQ)
@@ -68,16 +65,16 @@ static int set_vibetonz(int timeout)
         /* 2009.09.13(sunday) drkim - adjust vibratonz strength */
         if(timeout == -1) {
             //printk("[VIBETONZ] HI TEST MODE\n");            
-            s3c6410_timer_setup(1,10,VIBRATOR_ON_STRONG_PERIOD, VIBRATOR_OFF_STRONG_PERIOD);
+            s3c6410_timer_setup(1,10, pwm_freq, VIBRATOR_OFF_STRONG_PERIOD);
         }
         else {
             if (timeout >= VIBRATOR_STRENGTH) {
-               s3c6410_timer_setup(1,10,VIBRATOR_ON_WEEK_PERIOD, VIBRATOR_OFF_WEEK_PERIOD);
-                timeout -= 0x40000000;
+               s3c6410_timer_setup(1,10, pwm_freq, VIBRATOR_OFF_WEEK_PERIOD);
+                timeout -= VIBRATOR_STRENGTH;
 				//printk("[VIBETONZ] LOW, timeout= %x\n", timeout);
             }
             else {
-                s3c6410_timer_setup(1,10,VIBRATOR_ON_STRONG_PERIOD,VIBRATOR_OFF_STRONG_PERIOD);                
+                s3c6410_timer_setup(1,10, pwm_freq, VIBRATOR_OFF_STRONG_PERIOD);                
             }
         }
 		gpio_set_value(GPIO_VIB_EN, GPIO_LEVEL_HIGH);
@@ -88,7 +85,7 @@ static int set_vibetonz(int timeout)
 	}
 
 	vibrator_value = timeout;
-//    printk("[VIBETONZ] END, timeout = %x\n", vibrator_value);    
+    //printk("[VIBETONZ] END, timeout = %x\n", vibrator_value);
 	
 	return timeout;
 }
@@ -97,11 +94,28 @@ static enum hrtimer_restart vibetonz_timer_func(struct hrtimer *timer)
 {
 	unsigned long flags;
 
-	//gprintk("[VIBETONZ] %s : \n",__func__);
-	spin_lock_irqsave(&vib_lock, flags);	
+	//printk("[VIBETONZ] %s : \n",__func__);
+	spin_lock_irqsave(&vib_lock, flags);
 	set_vibetonz(0);
 	spin_unlock_irqrestore(&vib_lock, flags);
-	
+
+	return HRTIMER_NORESTART;
+}
+
+static enum hrtimer_restart vibetonz_cut_off(struct hrtimer *timer)
+{
+	unsigned long flags;
+
+	//printk("[VIBETONZ] %s : \n",__func__);
+	spin_lock_irqsave(&vib_lock, flags);
+	//s3c6410_timer_setup(1, 10, 300, 1);
+	set_vibetonz(0);
+	spin_unlock_irqrestore(&vib_lock, flags);
+	timer->function = vibetonz_timer_func;
+	hrtimer_start(timer,
+					ktime_set(500 / 1000, (500 % 1000) * 1000000),
+					HRTIMER_MODE_REL);
+
 	return HRTIMER_NORESTART;
 }
 
@@ -124,6 +138,8 @@ static void enable_vibetonz_from_user(struct timed_output_dev *dev,int value)
 {
 	unsigned long flags;
 
+	if(value==0)return;
+
 	//printk("[VIBETONZ] %s : time = %d msec \n",__func__,value);
 	hrtimer_cancel(&timer);
 
@@ -136,7 +152,7 @@ static void enable_vibetonz_from_user(struct timed_output_dev *dev,int value)
 	{
 		if (value > max_timeout)
 			value = max_timeout;
-
+		timer.function = vibetonz_cut_off;
 		hrtimer_start(&timer,
 						ktime_set(value / 1000, (value % 1000) * 1000000),
 						HRTIMER_MODE_REL);
@@ -144,13 +160,33 @@ static void enable_vibetonz_from_user(struct timed_output_dev *dev,int value)
 	}
 }
 
+// Vibrator frequency is calculated as follows:
+// CPU_external_clock(Hz) / prescaler / divider / ISA1000 divider / frequency(Hz)
+// Example for Spica at stock CPU speed and optimal vibrator frequency (175Hz):
+// 66000000/2/5/128/175 = 295
+static ssize_t freq_store(struct device *aDevice, struct device_attribute *aAttribute, const char *aBuf, size_t aSize)
+{
+  if(sscanf(aBuf, "%d", &pwm_freq))
+  {
+    enable_vibetonz_from_user(&timed_output_vt, 1000);
+  }
+  return aSize;
+}
+
+static ssize_t freq_show(struct device *aDevice, struct device_attribute *aAttribute, char *aBuf)
+{
+    return sprintf(aBuf, "%d\n", pwm_freq);
+}
+
+static DEVICE_ATTR(freq, S_IRUGO | S_IWUSR, freq_show, freq_store);
 
 static struct timed_output_dev timed_output_vt = {
 	.name     = "vibrator",
 	.get_time = get_time_for_vibetonz,
 	.enable   = enable_vibetonz_from_user,
 };
-static void vibetonz_start(void)
+
+static int vibetonz_start(void)
 {
 	int ret = 0;
 
@@ -159,7 +195,7 @@ static void vibetonz_start(void)
 
 	/* hrtimer settings */
 	hrtimer_init(&timer, CLOCK_MONOTONIC, HRTIMER_MODE_REL);
-	timer.function = vibetonz_timer_func;
+	timer.function = vibetonz_cut_off;
 
 	if (gpio_is_valid(GPIO_VIB_EN)) {
 		if (gpio_request(GPIO_VIB_EN, S3C_GPIO_LAVEL(GPIO_VIB_EN))) 
@@ -171,24 +207,28 @@ static void vibetonz_start(void)
 	s3c_gpio_setpull(GPIO_VIB_EN, S3C_GPIO_PULL_NONE);
 
 	/* pwm timer settings */
-	s3c6410_timer_setup(1,10,VIBRATOR_ON_STRONG_PERIOD, VIBRATOR_OFF_STRONG_PERIOD);
+	s3c6410_timer_setup(1,10, pwm_freq, VIBRATOR_OFF_STRONG_PERIOD);
 	
 	/* timed_output_device settings */
 	ret = timed_output_dev_register(&timed_output_vt);
+	ret |= device_create_file(timed_output_vt.dev, &dev_attr_freq);
 	if(ret)
-		printk(KERN_ERR "[VIBETONZ] timed_output_dev_register is fail \n");	
+		printk(KERN_ERR "[VIBETONZ] timed_output_dev_register is fail \n");
+	return ret;
 }
 
 
 static void vibetonz_end(void)
 {
 	printk("[VIBETONZ] %s \n",__func__);
+	device_remove_file(timed_output_vt.dev, &dev_attr_freq);
+	timed_output_dev_unregister(&timed_output_vt);
 }
 
-static void __init vibetonz_init(void)
+static int __init vibetonz_init(void)
 {
 	
-	vibetonz_start();
+	return vibetonz_start();
 }
 
 

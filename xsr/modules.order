@@ -1,0 +1,3 @@
+kernel//home/spica/i5700/kernel/cri/../../modules/xsr/xsr.ko
+kernel//home/spica/i5700/kernel/cri/../../modules/xsr/xsr_stl.ko
+kernel//home/spica/i5700/kernel/cri/../../modules/xsr/xsr_debug.ko

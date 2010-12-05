@@ -4,9 +4,9 @@
  *
  * SDIO core support 1bit, 4 bit SDIO mode as well as SPI mode.
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -24,7 +24,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: sbsdio.h,v 13.29.4.1.4.1 2008/09/04 00:41:38 Exp $
+ * $Id: sbsdio.h,v 13.29.4.1.22.3 2009/03/11 20:26:57 Exp $
  */
 
 #ifndef	_SBSDIO_H
@@ -45,9 +45,9 @@
 #define SBSDIO_DEVICE_CTL		0x10009		/* control busy signal generation */
 
 /* registers introduced in rev 8, some content (mask/bits) defs in sbsdpcmdev.h */
-#define SBSDIO_FUNC1_SBADDRLOW		0x1000A		/* SB Address Window Low (b31-b24) */
-#define SBSDIO_FUNC1_SBADDRMID		0x1000B		/* SB Address Window Mid (b23-b16) */
-#define SBSDIO_FUNC1_SBADDRHIGH		0x1000C		/* SB Address Window High (b15)    */
+#define SBSDIO_FUNC1_SBADDRLOW		0x1000A		/* SB Address Window Low (b15) */
+#define SBSDIO_FUNC1_SBADDRMID		0x1000B		/* SB Address Window Mid (b23:b16) */
+#define SBSDIO_FUNC1_SBADDRHIGH		0x1000C		/* SB Address Window High (b31:b24)    */
 #define SBSDIO_FUNC1_FRAMECTRL		0x1000D		/* Frame Control (frame term/abort) */
 #define SBSDIO_FUNC1_CHIPCLKCSR		0x1000E		/* ChipClockCSR (ALP/HT ctl/status) */
 #define SBSDIO_FUNC1_SDIOPULLUP 	0x1000F		/* SdioPullUp (on cmd, d0-d2) */
@@ -123,10 +123,10 @@
 					(alponly ? 1 : SBSDIO_HTAV(regval)))
 
 /* SBSDIO_FUNC1_SDIOPULLUP */
-#define SBSDIO_PULLUP_D0		0x01		/* Enable D0 pullup */
-#define SBSDIO_PULLUP_D1		0x02		/* Enable D1 pullup */
+#define SBSDIO_PULLUP_D0		0x01		/* Enable D0/MISO pullup */
+#define SBSDIO_PULLUP_D1		0x02		/* Enable D1/INT# pullup */
 #define SBSDIO_PULLUP_D2		0x04		/* Enable D2 pullup */
-#define SBSDIO_PULLUP_CMD		0x08		/* Enable CMD pullup */
+#define SBSDIO_PULLUP_CMD		0x08		/* Enable CMD/MOSI pullup */
 #define SBSDIO_PULLUP_ALL		0x0f		/* All valid bits */
 
 /* function 1 OCP space */
@@ -136,10 +136,10 @@
 
 /* some duplication with sbsdpcmdev.h here */
 /* valid bits in SBSDIO_FUNC1_SBADDRxxx regs */
-#define SBSDIO_SBADDRLOW_MASK	0x80			/* Valid bits in SBADDRLOW */
-#define SBSDIO_SBADDRMID_MASK	0xff			/* Valid bits in SBADDRMID */
-#define SBSDIO_SBADDRHIGH_MASK	0xff			/* Valid bits in SBADDRHIGH */
-#define SBSDIO_SBWINDOW_MASK	0xffff8000		/* Address bits from SBADDR regs */
+#define SBSDIO_SBADDRLOW_MASK		0x80		/* Valid bits in SBADDRLOW */
+#define SBSDIO_SBADDRMID_MASK		0xff		/* Valid bits in SBADDRMID */
+#define SBSDIO_SBADDRHIGH_MASK		0xffU		/* Valid bits in SBADDRHIGH */
+#define SBSDIO_SBWINDOW_MASK		0xffff8000	/* Address bits from SBADDR regs */
 
 /* direct(mapped) cis space */
 #define SBSDIO_CIS_BASE_COMMON		0x1000		/* MAPPED common CIS address */

@@ -1,9 +1,9 @@
 /*
  * Trace messages sent over HBUS
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -21,7 +21,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: msgtrace.h,v 1.2.8.1.4.2 2008/12/22 01:29:00 Exp $
+ * $Id: msgtrace.h,v 1.1.2.4 2009/01/27 04:09:40 Exp $
  */
 
 #ifndef	_MSGTRACE_H

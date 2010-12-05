@@ -1,0 +1,3 @@
+0x00000000	set_param_value	/home/spica/i5700.2/modules_cyanogen/param/param	EXPORT_SYMBOL
+0x00000000	get_param_value	/home/spica/i5700.2/modules_cyanogen/param/param	EXPORT_SYMBOL
+0x00000000	save_param_value	/home/spica/i5700.2/modules_cyanogen/param/param	EXPORT_SYMBOL

@@ -25,6 +25,9 @@
 #include <linux/types.h>
 #include <linux/timer.h>
 #include <linux/kernel.h>
+#include <linux/pci.h>
+#include <linux/sched.h>
+#include <linux/slab.h>
 #include <linux/fs.h>
 #include <linux/platform_device.h>
 #include <linux/interrupt.h>
@@ -45,11 +48,12 @@
 
 #include <linux/version.h>
 #include <asm/dma.h>
+#include <asm/memory.h>
 #include <asm/cacheflush.h>
 #include <linux/dma-mapping.h>
 #include <linux/vmalloc.h>
 
-#include <mach/dma.h>
+//#include <mach/dma.h>
 #include <mach/hardware.h>
 #include <mach/map.h>
 #include <plat/dma.h>
@@ -1079,7 +1083,7 @@ static int s3c_g3d_ioctl(struct inode *inode, struct file *file, unsigned int cm
 			mutex_unlock(&cache_invalid_lock);
 			return -EFAULT;	
 		}
-		dmac_inv_range((const void *) param.vir_addr,(const void *)(param.vir_addr + param.size));
+		dmac_map_area((const void *) param.vir_addr,(const void *)(param.vir_addr + param.size),PCI_DMA_BIDIRECTIONAL);
 		mutex_unlock(&cache_invalid_lock);
 		break;
 
@@ -1090,7 +1094,7 @@ static int s3c_g3d_ioctl(struct inode *inode, struct file *file, unsigned int cm
 			mutex_unlock(&cache_clean_lock);
 			return -EFAULT;	
 		}
-		dmac_clean_range((const void *) param.vir_addr,(const void *)(param.vir_addr + param.size));
+		dmac_unmap_area((const void *) param.vir_addr,(const void *)(param.vir_addr + param.size),PCI_DMA_BIDIRECTIONAL);
 		mutex_unlock(&cache_clean_lock);
 		break;
 

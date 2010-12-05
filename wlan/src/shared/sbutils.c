@@ -2,9 +2,9 @@
  * Misc utility routines for accessing chip-specific features
  * of the SiliconBackplane-based Broadcom chips.
  *
- * Copyright (C) 1999-2009, Broadcom Corporation
+ * Copyright (C) 1999-2010, Broadcom Corporation
  * 
- *         Unless you and Broadcom execute a separate written software license
+ *      Unless you and Broadcom execute a separate written software license
  * agreement governing use of this software, this software is licensed to you
  * under the terms of the GNU General Public License version 2 (the "GPL"),
  * available at http://www.broadcom.com/licenses/GPLv2.php, with the
@@ -22,7 +22,7 @@
  * software in any way with any other Broadcom software provided under a license
  * other than the GPL, without Broadcom's express prior written consent.
  *
- * $Id: sbutils.c,v 1.662.4.10.2.7 2008/08/06 03:43:24 Exp $
+ * $Id: sbutils.c,v 1.662.4.10.2.7.4.2 2010/04/19 05:48:48 Exp $
  */
 
 #include <typedefs.h>
@@ -362,6 +362,9 @@ sb_corereg(si_t *sih, uint coreidx, uint regoff, uint mask, uint val)
 	ASSERT(GOODIDX(coreidx));
 	ASSERT(regoff < SI_CORE_SIZE);
 	ASSERT((val & ~mask) == 0);
+
+	if (coreidx >= SI_MAXCORES)
+		return 0;
 
 	if (BUSTYPE(sii->pub.bustype) == SI_BUS) {
 		/* If internal bus, we can always get at everything */
